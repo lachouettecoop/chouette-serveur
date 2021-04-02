@@ -19,8 +19,8 @@ s_handler.setFormatter(formatter)
 logger.addHandler(s_handler)
 f_handler = RotatingFileHandler(
     filename="chouette-serveur.log",
-    maxBytes=1024 * 1024,
-    backupCount=3,
+    maxBytes=10 * 1024 * 1024,
+    backupCount=10,
     encoding="utf-8",
 )
 f_handler.setFormatter(formatter)
@@ -36,7 +36,10 @@ def load_config():
 def exec_cmd(container, cmd):
     logging.info("Execute '%s' in docker %s", cmd, container.name)
     exec_id = container.create_exec(cmd)
-    return container.start_exec(exec_id)
+    result = container.start_exec(exec_id)
+    if isinstance(result, bytes):
+        return result.decode("utf-8")
+    return result
 
 
 def delete_old_zip():
@@ -80,17 +83,34 @@ def main():
         zip_ref.extract("dump.sql", config.zip.destination)
 
     project = get_project(config.compose.project)
-    containers = project.containers(service_names=["db"])
+    containers = project.containers()
 
-    if not containers:
+    if not containers or "db" not in [c.service for c in containers]:
         logging.error("db is not running")
         return
-    db_container = containers[0]
+
+    db_container = None
+    for c in containers:
+        if c.service != "db":
+            logging.info("Stopping %s", c.service)
+            c.stop()
+        else:
+            db_container = c
+
+    if not db_container:
+        logging.info("db has been stopped")
 
     logging.info("Restore DB ...")
     for cmd in config.compose.cmds:
-        exec_cmd(db_container, cmd)
+        result = exec_cmd(db_container, cmd)
+        if result:
+            logging.info(result)
     logging.info("... success")
+
+    for c in containers:
+        if c.service != "db":
+            logging.info("Restart %s", c.service)
+            c.start()
 
 
 if __name__ == "__main__":
