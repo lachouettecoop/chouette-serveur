@@ -2,6 +2,7 @@ import glob
 import logging
 import os
 from ftplib import FTP_TLS
+from logging.handlers import RotatingFileHandler
 from zipfile import ZipFile
 
 from compose.cli.command import get_project
@@ -10,11 +11,20 @@ from ruamel.yaml import YAML
 
 CONFIG_FILE = "config.yml"
 
-logging.basicConfig(
-    filename="server-tools.log",
-    format="%(asctime)s [%(levelname)s]: %(message)s",
-    level=logging.INFO,
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter("%(asctime)s [%(levelname)s]: %(message)s")
+s_handler = logging.StreamHandler()
+s_handler.setFormatter(formatter)
+logger.addHandler(s_handler)
+f_handler = RotatingFileHandler(
+    filename="chouette-serveur.log",
+    maxBytes=1024,
+    backupCount=3,
+    encoding="utf-8",
 )
+f_handler.setFormatter(formatter)
+logger.addHandler(f_handler)
 
 
 def load_config():
