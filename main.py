@@ -19,7 +19,7 @@ s_handler.setFormatter(formatter)
 logger.addHandler(s_handler)
 f_handler = RotatingFileHandler(
     filename="chouette-serveur.log",
-    maxBytes=1024,
+    maxBytes=1024 * 1024,
     backupCount=3,
     encoding="utf-8",
 )
