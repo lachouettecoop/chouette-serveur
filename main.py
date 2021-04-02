@@ -77,7 +77,7 @@ def main():
 
     logging.info("Unzip dump.sql from %s", filename)
     with ZipFile(filename, "r") as zip_ref:
-        zip_ref.extractall(config.zip.destination)
+        zip_ref.extract("dump.sql", config.zip.destination)
 
     project = get_project(config.compose.project)
     containers = project.containers(service_names=["db"])
