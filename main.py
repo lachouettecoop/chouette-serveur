@@ -1,6 +1,7 @@
 import glob
 import logging
 import os
+import re
 from ftplib import FTP_TLS
 from logging.handlers import RotatingFileHandler
 from zipfile import ZipFile
@@ -38,8 +39,14 @@ def exec_cmd(container, cmd):
     exec_id = container.create_exec(cmd)
     result = container.start_exec(exec_id)
     if isinstance(result, bytes):
-        return result.decode("utf-8")
-    return result
+        result = result.decode("utf-8")
+    errors = []
+    for line in result.splitlines():
+        if line and re.search(line, "error", re.IGNORECASE):
+            errors.append(line)
+    if errors:
+        return "\n".join(errors)
+    return "successful operation"
 
 
 def delete_old_zip():
@@ -73,10 +80,13 @@ def main():
     ftp_files.sort()
     filename = ftp_files[-1]
 
-    if not os.path.isfile(filename):
-        logging.info("Download file %s", filename)
-        with open(filename, "wb") as fp:
-            ftp.retrbinary(f"RETR {filename}", fp.write)
+    if os.path.isfile(filename):
+        logging.info("File %s already exists - Nothing to do", filename)
+        return
+
+    logging.info("Download file %s", filename)
+    with open(filename, "wb") as fp:
+        ftp.retrbinary(f"RETR {filename}", fp.write)
 
     logging.info("Unzip dump.sql from %s", filename)
     with ZipFile(filename, "r") as zip_ref:
