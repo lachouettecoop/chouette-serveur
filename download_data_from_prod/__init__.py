@@ -4,19 +4,9 @@ import shutil
 import tempfile
 from zipfile import ZipFile
 
-from dotmap import DotMap
-from ruamel.yaml import YAML
-
 from download_data_from_prod.containers import Containers
 from download_data_from_prod.ftp import download_sas_files
-
-CONFIG_FILE = "download_data_from_prod/config.yml"
-
-
-def load_config():
-    yaml = YAML(typ="safe")
-    with open(CONFIG_FILE) as f:
-        return DotMap(yaml.load(f), _dynamic=False)
+from helpers.config import load_config
 
 
 def recursive_change_mod(path, mod):
@@ -55,22 +45,22 @@ def main():
         with ZipFile(filename, "r") as zip_ref:
             zip_ref.extractall(tmp_dir)
 
-        dump_path = os.path.join(config.db.dest, "dump.sql")
+        dump_path = os.path.join(config.containers.db.dest, "dump.sql")
         shutil.rmtree(dump_path, ignore_errors=True)
         shutil.move(f"{tmp_dir}/dump.sql", dump_path)
-        os.chmod(dump_path, config.db.mod)
+        os.chmod(dump_path, config.containers.db.mod)
 
         tmp_filestore = os.path.join(tmp_dir, "filestore")
-        shutil.rmtree(config.odoo.dest, ignore_errors=True)
-        shutil.move(tmp_filestore, config.odoo.dest)
+        shutil.rmtree(config.containers.odoo.dest, ignore_errors=True)
+        shutil.move(tmp_filestore, config.containers.odoo.dest)
         recursive_change_mod(
-            config.odoo.dest,
-            config.odoo.mod,
+            config.containers.odoo.dest,
+            config.containers.odoo.mod,
         )
         recursive_change_owner(
-            config.odoo.dest,
-            config.odoo.user,
-            config.odoo.group,
+            config.containers.odoo.dest,
+            config.containers.odoo.user,
+            config.containers.odoo.group,
         )
 
     containers.run_db_cmds()
