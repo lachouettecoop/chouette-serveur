@@ -7,23 +7,7 @@ poetry install
 ```
 
 ### Configuration
-Creer un fichier config.yml contenant :
-```yaml
-ftp:
-  host: ... # FTP host
-  user: ... # Username
-  password: ... # Password
-  backups_pass: ... # From where the zip is download
-
-zip:
-  destination: ... # To where the zip is download
-
-compose:
-  project: ... # Project path with docker_compose.yml
-  cmds:
-    - ...  # List of commands to execute in db docker
-    - ...
-```
+Creer un fichier config.yml en vous inspirant de config.yml.example
 
 ### Execution
 ```shell
