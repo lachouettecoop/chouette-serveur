@@ -14,7 +14,7 @@ def _delete_old_zip():
         os.remove(filename)
 
 
-def download_sas_files(config):
+def download_sas_files(config, force=False):
     _delete_old_zip()
 
     ftp = FTP_TLS(
@@ -35,7 +35,7 @@ def download_sas_files(config):
 
     if os.path.isfile(filename):
         logging.info("File %s already exists - Nothing to do", filename)
-        return
+        return filename if force else None
 
     logging.info("Downloading file %s", filename)
     with open(filename, "wb") as fp:

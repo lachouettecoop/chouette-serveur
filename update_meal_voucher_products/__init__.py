@@ -27,7 +27,7 @@ def set_products_mv(odoo_api, entities):
 
 
 def main():
-    config = load_config()
+    config = load_config(__name__)
     odoo_api = OdooAPI(
         config.odoo.url,
         config.odoo.db,

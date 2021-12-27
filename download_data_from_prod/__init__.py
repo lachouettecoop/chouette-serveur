@@ -4,9 +4,9 @@ import shutil
 import tempfile
 from zipfile import ZipFile
 
-from download_data_from_prod.containers import Containers
 from download_data_from_prod.ftp import download_sas_files
 from helpers.config import load_config
+from helpers.containers import Containers
 
 
 def recursive_change_mod(path, mod):
@@ -26,42 +26,42 @@ def recursive_change_owner(path, user, group):
 
 
 def main():
-    config = load_config()
+    config = load_config(__name__)
 
     filename = download_sas_files(config)
     if not filename:
         return
 
-    containers = Containers(config)
-    if not containers.is_db_running():
-        logging.error("db is not running")
-        return
+    containers = Containers(config.compose.project)
+    try:
+        containers.stop_all()
+        containers.restart("db")
 
-    containers.stop_all_but_db()
-    containers.restart_db()
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            logging.info("Unzip from %s", filename)
+            with ZipFile(filename, "r") as zip_ref:
+                zip_ref.extractall(tmp_dir)
 
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        logging.info("Unzip from %s", filename)
-        with ZipFile(filename, "r") as zip_ref:
-            zip_ref.extractall(tmp_dir)
+            dump_path = os.path.join(config.containers.db.dest, "dump.sql")
+            shutil.rmtree(dump_path, ignore_errors=True)
+            shutil.move(f"{tmp_dir}/dump.sql", dump_path)
+            os.chmod(dump_path, config.containers.db.mod)
 
-        dump_path = os.path.join(config.containers.db.dest, "dump.sql")
-        shutil.rmtree(dump_path, ignore_errors=True)
-        shutil.move(f"{tmp_dir}/dump.sql", dump_path)
-        os.chmod(dump_path, config.containers.db.mod)
+            tmp_filestore = os.path.join(tmp_dir, "filestore")
+            shutil.rmtree(config.containers.odoo.dest, ignore_errors=True)
+            shutil.move(tmp_filestore, config.containers.odoo.dest)
+            recursive_change_mod(
+                config.containers.odoo.dest,
+                config.containers.odoo.mod,
+            )
+            recursive_change_owner(
+                config.containers.odoo.dest,
+                config.containers.odoo.user,
+                config.containers.odoo.group,
+            )
 
-        tmp_filestore = os.path.join(tmp_dir, "filestore")
-        shutil.rmtree(config.containers.odoo.dest, ignore_errors=True)
-        shutil.move(tmp_filestore, config.containers.odoo.dest)
-        recursive_change_mod(
-            config.containers.odoo.dest,
-            config.containers.odoo.mod,
-        )
-        recursive_change_owner(
-            config.containers.odoo.dest,
-            config.containers.odoo.user,
-            config.containers.odoo.group,
-        )
-
-    containers.run_db_cmds()
-    containers.start_all_but_db()
+        containers.run_cmds("db", config.compose.db_cmds)
+    except Exception as e:
+        logging.error(f"Exception: {str(e)}")
+    finally:
+        containers.restart_all()
