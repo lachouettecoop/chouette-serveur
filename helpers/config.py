@@ -4,7 +4,7 @@ from ruamel.yaml import YAML
 CONFIG_FILE = "config.yml"
 
 
-def load_config():
+def load_config(section):
     yaml = YAML(typ="safe")
     with open(CONFIG_FILE) as f:
-        return DotMap(yaml.load(f), _dynamic=False)
+        return DotMap(yaml.load(f), _dynamic=False).get(section)
