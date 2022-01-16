@@ -31,3 +31,15 @@ update_meal_voucher_products:
     db: ...                             # DB name
     user: ...                           # ODOO user
     password: ...                       # User password
+
+customers_populate_from_ldap:
+  ldap:
+    url: ldap://ldap.mysite.com:389
+    username: cn=login,dc=mysite,dc=com
+    password: password
+    dn: dc=mysite,dc=com
+  odoo:
+    url: https://sas.lachouettecoop.fr  # ODOO URL
+    db: ...                             # DB name
+    user: ...                           # ODOO user
+    password: ...                       # User password
