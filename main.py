@@ -5,6 +5,7 @@ from logging.handlers import RotatingFileHandler
 from customers_populate_from_ldap import main as customers_populate_from_ldap
 from download_data_from_prod import main as download_data_from_prod
 from update_meal_voucher_products import main as update_meal_voucher_products
+from update_scales import main as update_scales
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -28,4 +29,6 @@ if __name__ == "__main__":
         update_meal_voucher_products()
     elif sys.argv[1] == "customers_populate_from_ldap":
         customers_populate_from_ldap()
+    elif sys.argv[1] == "update_scales":
+        update_scales()
     sys.exit(-1)
