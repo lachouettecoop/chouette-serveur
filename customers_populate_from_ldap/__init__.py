@@ -13,6 +13,13 @@ from the list of person in a LDAP directory using their associated
 barcode as matching key.
 """
 
+CUSTOMERS_TO_KEEP = {
+    "2416424149122",  # Convivialité
+    "2416424149061",  # Externe
+    "2416424149191",  # Hygiène
+    "2416424148941",  # Nouveau
+}
+
 
 def ldap_person_to_odoo_customer(ldap_person):
     """Extract variable name, barcode, email"""
@@ -33,7 +40,9 @@ def update_odoo_customers(odoo, new_customers, dry_run=False):
     old_customers = get_odoo_customers(odoo, fields)
 
     old_customers_dict = {
-        customer["barcode"]: customer for customer in old_customers
+        c["barcode"]: c
+        for c in old_customers
+        if c["barcode"] not in CUSTOMERS_TO_KEEP
     }
     new_customers_dict = {
         customer["barcode"]: customer for customer in new_customers
