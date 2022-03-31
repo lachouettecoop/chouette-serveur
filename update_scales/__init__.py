@@ -42,6 +42,11 @@ def main():
     if not logs:
         logging.info("Nothing to update")
         return
+    for log in logs:
+        product_text = log["product_text"]
+        product_attrs = product_text.split("#")
+        product_attrs[11] = "0"
+        log["product_text"] = "#".join(product_attrs)
     now = datetime.now()
     date_time = now.strftime("%Y%m%d_%H%M")
     arti_file_name = f"{ARTI_PREFIX}{date_time}{SUFFIX}"
