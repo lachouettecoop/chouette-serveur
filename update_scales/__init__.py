@@ -1,6 +1,6 @@
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from ftplib import FTP
 
 from helpers.config import load_config
@@ -44,7 +44,7 @@ def main():
     if not logs:
         logging.info("Nothing to update")
         return
-    now = datetime.now()
+    now = datetime.now() + timedelta(minutes=5)
     date_time = now.strftime("%Y%m%d_%H%M%S")
     arti_file_name = f"{ARTI_PREFIX}{date_time}{SUFFIX}"
     with open(arti_file_name, "a") as f:
