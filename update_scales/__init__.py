@@ -50,16 +50,18 @@ def main():
     arti_file_name = f"{ARTI_PREFIX}{date_time}{SUFFIX}"
     with io.open(arti_file_name, "a", encoding="latin-1") as f:
         f.write(
-            "".join([e.get("product_text") for e in logs]).replace(
-                UNIX_LINE_ENDING, WINDOWS_LINE_ENDING
-            )
+            "".join([e.get("product_text") for e in logs])
+            .replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING)
+            .replace("\u2018", "'")
+            .replace("\u2019", "'")
         )
     text_file_name = f"{TEXT_PREFIX}{date_time}{SUFFIX}"
     with io.open(text_file_name, "a", encoding="latin-1") as f:
         f.write(
-            "".join([e.get("external_text") for e in logs]).replace(
-                UNIX_LINE_ENDING, WINDOWS_LINE_ENDING
-            )
+            "".join([e.get("external_text") for e in logs])
+            .replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING)
+            .replace("\u2018", "'")
+            .replace("\u2019", "'")
         )
     logging.info(f"Uploading files {arti_file_name} and {text_file_name}")
     with FTP(config.ftp.host, config.ftp.user, config.ftp.password) as ftp:
