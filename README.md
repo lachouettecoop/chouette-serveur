@@ -13,3 +13,7 @@ Creer un fichier config.yml en vous inspirant de config.yml.example
 ```shell
 poetry run python mail.py
 ```
+
+### mysql to postgresql
+This script comes from project : [mysql-postgresql-converter](https://raw.githubusercontent.com/lanyrd/mysql-postgresql-converter)
+Thanks to [machisuji](https://github.com/machisuji)
