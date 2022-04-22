@@ -15,5 +15,5 @@ poetry run python mail.py
 ```
 
 ### mysql to postgresql
-This script comes from project : [mysql-postgresql-converter](https://raw.githubusercontent.com/lanyrd/mysql-postgresql-converter)
+This script comes from project : [mysql-postgresql-converter](https://github.com/machisuji/mysql-postgresql-converter/blob/master/db_converter.py)
 Thanks to [machisuji](https://github.com/machisuji)
