@@ -18,6 +18,7 @@ CUSTOMERS_TO_KEEP = {
     "2416424149061",  # Externe
     "2416424149191",  # Hygiène
     "2416424148941",  # Nouveau
+    "2416424149207",  # PassKoop
 }
 
 
