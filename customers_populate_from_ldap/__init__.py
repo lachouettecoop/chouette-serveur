@@ -4,7 +4,7 @@ import sys
 import ldap
 import yaml
 
-from helpers.config import load_config
+from helpers.config import CONFIG
 from helpers.odoo_api import OdooAPI
 
 """
@@ -181,7 +181,7 @@ def open_conf_file(filename):
 
 
 def main():
-    config = load_config(__name__)
+    config = CONFIG.get(__name__)
     ldap_persons = search_ldap_persons(**config["ldap"])
     odoo_api = OdooAPI(
         config.odoo.url,

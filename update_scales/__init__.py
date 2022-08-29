@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timedelta
 from ftplib import FTP
 
-from helpers.config import load_config
+from helpers.config import CONFIG
 from helpers.odoo_api import OdooAPI
 
 ARTI_PREFIX = "ARTI_MAG_0000_"
@@ -13,7 +13,7 @@ SUFFIX = ".CSV"
 WINDOWS_LINE_ENDING = "\r\n"
 UNIX_LINE_ENDING = "\n"
 
-config = load_config(__name__)
+config = CONFIG.get(__name__)
 odoo_api = OdooAPI(
     config.odoo.url,
     config.odoo.db,

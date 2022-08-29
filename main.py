@@ -2,6 +2,10 @@ import logging
 import sys
 from logging.handlers import RotatingFileHandler
 
+import sentry_sdk
+
+from helpers.config import CONFIG
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter("%(asctime)s [%(levelname)s]: %(message)s")
@@ -16,6 +20,9 @@ f_handler = RotatingFileHandler(
 )
 f_handler.setFormatter(formatter)
 logger.addHandler(f_handler)
+
+if sentry_config := CONFIG.get("sentry"):
+    sentry_sdk.init(dsn=sentry_config.dsn, traces_sample_rate=1.0)
 
 if __name__ == "__main__":
     if len(sys.argv) <= 1 or sys.argv[1] == "download_data_from_prod":
