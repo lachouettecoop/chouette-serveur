@@ -30,9 +30,11 @@ def get_logs():
         ],
         fields=[
             "external_text",
+            "product_id",
             "product_text",
             "sent",
         ],
+        order="log_date ASC",
     )
 
 
@@ -45,12 +47,16 @@ def main():
     if not logs:
         logging.info("Nothing to update")
         return
+    # keep only last product log
+    filtered_logs = {}
+    for log in logs:
+        filtered_logs[log["product_id"][0]] = log
     now = datetime.now() + timedelta(minutes=5)
     date_time = now.strftime("%Y%m%d_%H%M%S")
     arti_file_name = f"{ARTI_PREFIX}{date_time}{SUFFIX}"
     with io.open(arti_file_name, "a", encoding="latin-1") as f:
         f.write(
-            "".join([e.get("product_text") for e in logs])
+            "".join([e.get("product_text") for e in filtered_logs.values()])
             .replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING)
             .replace("\u2018", "'")
             .replace("\u2019", "'")
@@ -58,7 +64,7 @@ def main():
     text_file_name = f"{TEXT_PREFIX}{date_time}{SUFFIX}"
     with io.open(text_file_name, "a", encoding="latin-1") as f:
         f.write(
-            "".join([e.get("external_text") for e in logs])
+            "".join([e.get("external_text") for e in filtered_logs.values()])
             .replace(UNIX_LINE_ENDING, WINDOWS_LINE_ENDING)
             .replace("\u2018", "'")
             .replace("\u2019", "'")
