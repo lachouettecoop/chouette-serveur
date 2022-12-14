@@ -26,7 +26,7 @@ def get_logs():
     return odoo_api.search_read(
         entity="product.scale.log",
         cond=[
-            ["sent", "=", True],
+            ["sent", "=", False],
         ],
         fields=[
             "action",
