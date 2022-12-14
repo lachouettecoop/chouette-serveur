@@ -26,13 +26,14 @@ def get_logs():
     return odoo_api.search_read(
         entity="product.scale.log",
         cond=[
-            ["sent", "=", False],
+            ["sent", "=", True],
         ],
         fields=[
+            "action",
             "external_text",
             "product_id",
             "product_text",
-            "sent",
+            "write_date",
         ],
         order="log_date ASC",
     )
@@ -50,9 +51,11 @@ def main():
     # keep only last product log
     filtered_logs = {}
     for log in logs:
+        if log["action"] == "unlink":
+            continue
         filtered_logs[log["product_id"][0]] = log
-    now = datetime.now() + timedelta(minutes=5)
-    date_time = now.strftime("%Y%m%d_%H%M%S")
+    in_five_minutes = datetime.now() + timedelta(minutes=5)
+    date_time = in_five_minutes.strftime("%Y%m%d_%H%M%S")
     arti_file_name = f"{ARTI_PREFIX}{date_time}{SUFFIX}"
     with io.open(arti_file_name, "a", encoding="latin-1") as f:
         f.write(
