@@ -1,4 +1,8 @@
+import os
+import ssl
 import xmlrpc.client
+
+CONTEXT = os.getenv("NO_SSL")
 
 
 class OdooAPI:
@@ -13,13 +17,21 @@ class OdooAPI:
             self.passwd = passwd
             common_proxy_url = "{}/xmlrpc/2/common".format(self.url)
             object_proxy_url = "{}/xmlrpc/2/object".format(self.url)
-            self.common = xmlrpc.client.ServerProxy(common_proxy_url)
+            context = ssl._create_unverified_context() if CONTEXT else None
+            self.common = xmlrpc.client.ServerProxy(
+                common_proxy_url,
+                context=context,
+            )
             self.uid = self.common.authenticate(
                 self.db, self.user, self.passwd, {}
             )
-            self.models = xmlrpc.client.ServerProxy(object_proxy_url)
+            self.models = xmlrpc.client.ServerProxy(
+                object_proxy_url,
+                context=context,
+            )
         except:  # noqa E722
             print("Impossible d'initialiser la connexion API Odoo")
+            raise
 
     def get_entity_fields(self, entity):
         fields = self.models.execute_kw(
