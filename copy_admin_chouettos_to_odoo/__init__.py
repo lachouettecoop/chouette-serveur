@@ -1,6 +1,6 @@
 import logging
 
-from helpers.config import load_config
+from helpers.config import CONFIG
 from helpers.containers import Containers
 
 from .db_converter import parse
@@ -28,7 +28,7 @@ TABLE_NAMES = [
 
 
 def main():
-    config = load_config(__name__)
+    config = CONFIG.get(__name__)
 
     logging.info("dump admin_chouettos")
     containers = Containers(config.admin_chouettos.path)

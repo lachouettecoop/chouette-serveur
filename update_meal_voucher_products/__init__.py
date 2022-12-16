@@ -1,6 +1,6 @@
 import logging
 
-from helpers.config import load_config
+from helpers.config import CONFIG
 from helpers.odoo_api import OdooAPI
 from update_meal_voucher_products.categories import MEAL_VOUCHER_CATEGORIES
 
@@ -27,7 +27,7 @@ def set_products_mv(odoo_api, entities):
 
 
 def main():
-    config = load_config(__name__)
+    config = CONFIG.get(__name__)
     odoo_api = OdooAPI(
         config.odoo.url,
         config.odoo.db,

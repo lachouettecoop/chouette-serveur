@@ -5,7 +5,7 @@ import tempfile
 from zipfile import ZipFile
 
 from download_data_from_prod.ftp import download_sas_files
-from helpers.config import load_config
+from helpers.config import CONFIG
 from helpers.containers import Containers
 
 
@@ -26,7 +26,7 @@ def recursive_change_owner(path, user, group):
 
 
 def main():
-    config = load_config(__name__)
+    config = CONFIG.get(__name__)
 
     filename = download_sas_files(config)
     if not filename:
