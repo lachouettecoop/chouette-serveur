@@ -32,10 +32,12 @@ def main():
     if not filename:
         return
 
-    containers = Containers(config.compose.project)
+    metabase_containers = Containers(config.compose.metabase)
+    odoo_containers = Containers(config.compose.odoo)
     try:
-        containers.stop_all()
-        containers.restart("db")
+        metabase_containers.stop_all()
+        odoo_containers.stop_all()
+        odoo_containers.restart("db")
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             logging.info("Unzip from %s", filename)
@@ -60,8 +62,9 @@ def main():
                 config.containers.odoo.group,
             )
 
-        containers.run_cmds("db", config.compose.db_cmds)
+        odoo_containers.run_cmds("db", config.compose.db_cmds)
     except Exception as e:
         logging.error(f"Exception: {str(e)}")
     finally:
-        containers.restart_all()
+        odoo_containers.restart_all()
+        metabase_containers.restart_all()
