@@ -34,7 +34,7 @@ class Containers:
         try:
             # Run `docker-compose down`
             subprocess.run(
-                ["docker-compose", "down"],
+                ["docker-compose", "stop"],
                 cwd=self.project,
                 check=True
             )
@@ -42,12 +42,12 @@ class Containers:
         except subprocess.CalledProcessError as e:
             logging.error(f"Error stopping docker-compose: {e}")
 
-    def run_cmds(self, containers, cmds):
+    def run_cmds(self, container, cmds):
         for cmd in cmds:
             try:
                 # Run `docker-compose down`
                 subprocess.run(
-                    ["docker-compose", "exec", containers, cmd],
+                    ["docker-compose", "exec", container, cmd],
                     cwd=self.project,
                     check=True
                 )
