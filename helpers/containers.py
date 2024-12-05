@@ -46,7 +46,7 @@ class Containers:
         for cmd in cmds:
             # Run `docker-compose down`
             subprocess.run(
-                ["docker-compose", "exec", container] + cmd.split(" "),
+                ["docker-compose", "exec", "sh", "-c", f'"{cmd}"'],
                 cwd=self.project,
                 check=True
             )
