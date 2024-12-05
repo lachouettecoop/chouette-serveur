@@ -44,13 +44,10 @@ class Containers:
 
     def run_cmds(self, container, cmds):
         for cmd in cmds:
-            try:
-                # Run `docker-compose down`
-                subprocess.run(
-                    ["docker-compose", "exec", container, cmd],
-                    cwd=self.project,
-                    check=True
-                )
-                logging.info(f"Docker Compose run cmd for {self.project}")
-            except subprocess.CalledProcessError as e:
-                logging.error(f"Error run cmd docker-compose: {e}")
+            # Run `docker-compose down`
+            subprocess.run(
+                ["docker-compose", "exec", container, cmd],
+                cwd=self.project,
+                check=True
+            )
+            logging.info(f"Docker Compose run cmd for {self.project}")
