@@ -32,17 +32,16 @@ def main():
 
     logging.info("dump admin_chouettos")
     containers = Containers(config.admin_chouettos.path)
-    db = containers.get_container(config.admin_chouettos.db)
-    user = db.environment["MARIADB_USER"]
-    password = db.environment["MARIADB_PASSWORD"]
-    database = db.environment["MARIADB_DATABASE"]
+    user = config.admin_chouettos.user
+    password = config.admin_chouettos.password
+    database = config.admin_chouettos.database
     dump_cmd = (
         "mysqldump --compatible=postgresql --default-character-set=utf8 "
         f"-u {user} -p{password} {database} > /var/lib/mysql/{DUMP_FILE}"
     )
     containers.run_cmds(
         config.admin_chouettos.db,
-        [f"sh -c '{dump_cmd}'"],
+        [dump_cmd],
     )
 
     with open(
@@ -60,13 +59,12 @@ def main():
 
     logging.info("drop/create/insert in odoo")
     containers = Containers(config.odoo.path)
-    db = containers.get_container(config.odoo.db)
-    user = db.environment["POSTGRES_USER"]
-    database = db.environment["POSTGRES_DB"]
+    user = config.odoo.user
+    database = config.odoo.database
     dump_cmd = (
         f"psql -U {user} {database} < /var/lib/postgresql/data/{DUMP_FILE}"
     )
     containers.run_cmds(
         config.odoo.db,
-        [f"sh -c '{dump_cmd}'"],
+        [dump_cmd],
     )
