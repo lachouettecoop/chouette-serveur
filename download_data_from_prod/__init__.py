@@ -32,10 +32,10 @@ def main():
     if not filename:
         return
 
-    metabase_containers = Containers(config.compose.metabase)
     odoo_containers = Containers(config.compose.odoo)
     try:
-        metabase_containers.stop_all()
+        for client in config.compose.clients:
+            Containers(client).stop_all()
         odoo_containers.stop_all()
         odoo_containers.restart("db")
 
@@ -67,4 +67,5 @@ def main():
         logging.error(f"Exception: {str(e)}")
     finally:
         odoo_containers.restart_all()
-        metabase_containers.restart_all()
+        for client in config.compose.clients:
+            Containers(client).restart_all()
