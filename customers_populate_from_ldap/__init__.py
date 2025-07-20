@@ -19,6 +19,8 @@ CUSTOMERS_TO_KEEP = {
     "2416424149191",  # Hygiène
     "2416424148941",  # Nouveau
     "2416424149207",  # PassKoop
+    "2416424149214",  # Pertes
+    "2416424149221",  # Banque Alimentaire
 }
 
 
