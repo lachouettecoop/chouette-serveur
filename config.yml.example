@@ -17,7 +17,8 @@ download_data_from_prod:
       group: 107        # chown files
 
   compose:
-    metabase: ...       # metabase project path
+    clients:
+    - ...               # metabase project path
     odoo: ...           # odoo project path
     db_cmds:            # List of commands to execute in db docker
     - dropdb -U odoo dbsas
